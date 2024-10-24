@@ -1,0 +1,41 @@
+---
+import { OG } from '@innoflex-technology/og-schema'
+import { serializeStructuredText } from '@innoflex-technology/og-utils'
+import BlogPost from '../../layouts/BlogPost.astro';
+
+
+export async function getStaticPaths() {
+    const projectId = "02158fba-ae81-4dc0-a0ed-dcb3328db369"
+    const projectKey = "63374ec2-5c01-4dea-9317-4ed368c50e50"
+    const client = new OG(projectId, projectKey, { cache: true })
+    const posts = await client.ListRecords('blog_post');
+	return posts.Items.map((post:any) => ({
+		params: { blogpost: post.slug },
+		props: post
+	}));
+}
+
+const post = Astro.props as any;
+
+---
+
+<BlogPost {...post.data}>
+	<h1>{post.title}</h1>
+    <div class="post" set:html={serializeStructuredText(post.contents)}/>
+</BlogPost>
+
+
+
+<style>
+	h1 {
+		font-size: 4rem;
+		font-weight: 700;
+		line-height: 1;
+		text-align: center;
+		margin-bottom: 1em;
+        color: white;
+	}
+    div.post {
+        color: white;
+    }
+</style>
